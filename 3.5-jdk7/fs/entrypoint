@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Run every files in /etc/entrypoint.d
+for _file in $(find /etc/entrypoint.d -type f -iname *.sh | sort); do
+    sudo chmod +x ${_file}
+    sudo sh ${_file}
+done
+
+# Run maven entrypoint
+exec /sbin/tini -- /usr/local/bin/mvn-entrypoint.sh "$@"
