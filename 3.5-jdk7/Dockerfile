@@ -41,9 +41,13 @@ RUN \
 	# Clear apk's cache
 	&& apk-cleanup
 
+# Replace default entrypoint
+COPY fs/entrypoint /usr/local/bin/entrypoint
+RUN chown ${MAVEN_UID}:${MAVEN_GID} /usr/local/bin/entrypoint \
+    && chown ${MAVEN_UID}:${MAVEN_GID} /usr/local/bin/mvn-entrypoint.sh
+
 # Switch to maven user
 USER ${MAVEN_USER}
-    
-COPY fs/entrypoint /usr/local/bin/entrypoint
 
+# Define entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
