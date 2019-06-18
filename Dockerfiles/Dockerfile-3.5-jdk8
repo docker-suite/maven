@@ -21,20 +21,22 @@ RUN mkdir -p $MAVEN_HOME_DIR \
 VOLUME $MAVEN_HOME_DIR
 
 # Add user maven to list of sudoers
-RUN echo "$MAVEN_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN echo "$MAVEN_USER ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN \
 	# Print executed commands
 	set -x \
-    # Download the install alpine-base
-    && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/craftdock/Install-Scripts/master/alpine-base/install-base.sh \
-    && sh /tmp/install-base.sh \
-    && rm /entrypoint \
     # Update repository indexes
-    && apk-update \
+    && apk update \
+    # Download the install alpine-base
+    && apk add curl \
+    && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/docker-suite/Install-Scripts/master/alpine-base/install-base.sh \
+    && sh /tmp/install-base.sh \
+    && rm /entrypoint.sh \
     # Install git and openssh
     && apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/main/ \
         git \
+        make \
         openssh \
     # Install sudo
     && apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
@@ -43,13 +45,13 @@ RUN \
 	&& apk-cleanup
 
 # Replace default entrypoint
-COPY fs/entrypoint /usr/local/bin/entrypoint
-RUN chown ${MAVEN_UID}:${MAVEN_GID} /usr/local/bin/entrypoint \
+COPY rootfs/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chown ${MAVEN_UID}:${MAVEN_GID} /usr/local/bin/entrypoint.sh \
     && chown ${MAVEN_UID}:${MAVEN_GID} /usr/local/bin/mvn-entrypoint.sh \
-    && chmod +x /usr/local/bin/entrypoint
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 # Switch to maven user
 USER ${MAVEN_USER}
 
 # Define entrypoint
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -1,0 +1,43 @@
+file:
+  /usr/local/bin/entrypoint.sh:
+    exists: true
+    mode: "0755"
+    filetype: file
+  /usr/local/bin/mvn-entrypoint.sh:
+    exists: true
+    mode: "0755"
+    filetype: file
+
+package:
+  git:
+    installed: true
+  make:
+    installed: true
+  openssh:
+    installed: true
+  sudo:
+    installed: true
+
+command:
+  maven-version:
+    exit-status: 0
+    exec: "mvn -version"
+    stdout:
+    - "Apache Maven"
+    - "Java version"
+
+
+group:
+  maven:
+    exists: true
+    gid: 1000
+    skip: false
+
+user:
+  maven:
+    exists: true
+    uid: 1000
+    gid: 1000
+    groups:
+    - maven
+    skip: false
