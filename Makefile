@@ -90,10 +90,10 @@ push-3.5-jdk8: build-3.5-jdk8
 
 push-3.6-jdk7: build-3.6-jdk7
 	@docker push $(DOCKER_IMAGE):3.6-jdk7
-	@docker push $(DOCKER_IMAGE):latest
 
 push-3.6-jdk8: build-3.6-jdk8
 	@docker push $(DOCKER_IMAGE):3.6-jdk8
+	@docker push $(DOCKER_IMAGE):latest
 
 shell-3.5-jdk7: build-3.5-jdk7
 	@docker run -it --rm \
@@ -131,3 +131,13 @@ shell-3.6-jdk8: build-3.6-jdk8
 remove:
 	@docker images | grep $(DOCKER_IMAGE) | tr -s ' ' | cut -d ' ' -f 2 | xargs -I {} docker rmi $(DOCKER_IMAGE):{}
 
+readme:
+	@docker run -t --rm \
+		-e http_proxy=${http_proxy} \
+		-e https_proxy=${https_proxy} \
+		-e DEBUG_LEVEL=DEBUG \
+		-e DOCKER_USERNAME=${DOCKER_USERNAME} \
+		-e DOCKER_PASSWORD=${DOCKER_PASSWORD} \
+		-e DOCKER_IMAGE=${DOCKER_IMAGE} \
+		-v $(DIR):/data \
+		dsuite/hub-updater
