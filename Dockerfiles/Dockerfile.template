@@ -1,0 +1,41 @@
+FROM maven:{{MAVEN_VERSION}}-alpine
+
+## maven user / config
+ENV NEW_USER="maven" \
+	NEW_UID=1000 \
+	NEW_GROUP="maven" \
+	NEW_GID=1000 \
+	NEW_HOME="/var/maven_home" \
+    MAVEN_CONFIG="/var/maven_home/.m2" \
+    USER="maven"
+
+# Maven home directory is a volume, so configuration and build history
+# can be persisted and survive image upgrades
+VOLUME /var/maven_home
+
+RUN \
+	# Print executed commands
+	set -x \
+    # Update repository indexes
+    && apk update \
+    # Download the install alpine-base
+    && apk add curl \
+    && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/docker-suite/Install-Scripts/master/alpine-base/install-base.sh \
+    && sh /tmp/install-base.sh \
+    # Install git and openssh
+    && apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/main/ \
+        git \
+        make \
+        openssh \
+    # Install sudo
+    && apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+        sudo \
+	# Clear apk's cache
+	&& apk-cleanup
+
+# Replace default entrypoint
+COPY rootfs/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+## Entrypoint
+ENTRYPOINT ["/entrypoint.sh"]

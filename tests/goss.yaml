@@ -1,7 +1,7 @@
 file:
-  /usr/local/bin/entrypoint.sh:
+  /entrypoint.sh:
     exists: true
-    mode: "0755"
+    mode: "0777"
     filetype: file
   /usr/local/bin/mvn-entrypoint.sh:
     exists: true

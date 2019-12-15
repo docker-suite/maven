@@ -1,9 +1,38 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090
 
-# Run every files in /etc/entrypoint.d
+###
+### Source libs
+###
 for file in $( find /etc/entrypoint.d/ -name '*.sh' -type f | sort -u ); do
-    [ -x "${file}" ] && sudo -E bash "${file}"
+    source "${file}"
 done
 
-# Run maven entrypoint
-exec /sbin/tini -- /usr/local/bin/mvn-entrypoint.sh "$@"
+###
+### Source custom user supplied libs
+###
+source_scripts "/startup.d"
+
+###
+### Run custom user supplied scripts
+###
+execute_scripts "/startup.1.d"
+execute_scripts "/startup.2.d"
+
+###
+### Execute only if arguments exist
+###
+if [ ! "$#" = "0" ]; then
+    ###
+    ### Run with the correct user
+    ###
+    if [ -n "$USER" ]; then
+        set -- su-exec "$USER" "$@"
+    fi
+
+    ###
+    ### Execute script with arguments
+    ###
+    # Execute script with arguments
+    exec tini -- /usr/local/bin/mvn-entrypoint.sh "$@"
+fi
