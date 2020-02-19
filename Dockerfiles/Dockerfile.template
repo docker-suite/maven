@@ -1,5 +1,21 @@
 FROM maven:{{MAVEN_VERSION}}-alpine
 
+
+LABEL maintainer="Hexosse <hexosse@gmail.com>" \
+    org.opencontainers.image.title="docker-suite dsuite/maven:{{MAVEN_VERSION}} image" \
+    org.opencontainers.image.description="A maven docker image built on top of the latest Alpine base container" \
+    org.opencontainers.image.authors="Hexosse <hexosse@gmail.com>" \
+    org.opencontainers.image.vendor="docker-suite" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.url="https://github.com/docker-suite/maven" \
+    org.opencontainers.image.source="https://github.com/docker-suite/maven" \
+    org.opencontainers.image.documentation="https://github.com/docker-suite/maven/blob/master/Readme.md" \
+    org.opencontainers.image.created="{{DOCKER_IMAGE_CREATED}}" \
+    org.opencontainers.image.revision="{{DOCKER_IMAGE_REVISION}}"
+
+# Github token
+ARG GH_TOKEN
+
 ## maven user / config
 ENV NEW_USER="maven" \
 	NEW_UID=1000 \
