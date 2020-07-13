@@ -25,10 +25,6 @@ ENV NEW_USER="maven" \
     MAVEN_CONFIG="/var/maven_home/.m2" \
     USER="maven"
 
-# Maven home directory is a volume, so configuration and build history
-# can be persisted and survive image upgrades
-VOLUME /var/maven_home
-
 RUN \
 	# Print executed commands
 	set -x \
