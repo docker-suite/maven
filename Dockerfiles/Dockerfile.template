@@ -16,22 +16,37 @@ LABEL maintainer="Hexosse <hexosse@gmail.com>" \
 # Github token
 ARG GH_TOKEN
 
-## maven user / config
-ENV NEW_USER="maven" \
-	NEW_UID=1000 \
-	NEW_GROUP="maven" \
-	NEW_GID=1000 \
-	NEW_HOME="/var/maven_home" \
-    MAVEN_CONFIG="/var/maven_home/.m2" \
-    USER="maven"
+# Maven user
+ARG MAVEN_USER="maven"
+ARG MAVEN_UID=1000
+ARG MAVEN_GROUP="maven"
+ARG MAVEN_GID=1000
 
+ENV NEW_USER=$MAVEN_USER \
+    NEW_UID=$MAVEN_UID \
+    NEW_GROUP=$MAVEN_GROUP \
+    NEW_GID=$MAVEN_GID \
+    NEW_HOME="/root"
+
+## Create users
+RUN \
+	# Print executed commands
+	set -x \
+    # Ensure maven user exists
+    && addgroup -g $NEW_GID -S $NEW_GROUP 2>/dev/null \
+    && adduser -u $NEW_UID -S -D -s /sbin/nologin -G $NEW_GROUP -g $NEW_USER $NEW_GROUP 2>/dev/null \
+    # maven user must be member of sudoers
+    && echo "${NEW_USER} ALL=(ALL) ALL" >> /etc/sudoers \
+    && echo "${NEW_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+##
 RUN \
 	# Print executed commands
 	set -x \
     # Update repository indexes
     && apk update \
     # Download the install alpine-base
-    && apk add curl \
+    && apk add --no-cache curl \
     && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/docker-suite/Install-Scripts/master/alpine-base/install-base.sh \
     && sh /tmp/install-base.sh \
     # Install git and openssh
@@ -45,8 +60,8 @@ RUN \
 	# Clear apk's cache
 	&& apk-cleanup
 
-# Replace default entrypoint
-COPY rootfs/entrypoint.sh /entrypoint.sh
+## Replace default entrypoint
+COPY /rootfs /
 RUN chmod +x /entrypoint.sh
 
 ## Entrypoint

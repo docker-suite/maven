@@ -6,7 +6,8 @@
 ![MicroBadger Size (tag)](https://img.shields.io/microbadger/image-size/dsuite/maven/latest.svg?style=flat-square)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-A [maven] docker image built on top of the latest [Alpine base][alpine-base] container.
+A [maven] [docker image] built on top of the latest [Alpine base][alpine-base] container.
 
 [maven]: https://maven.apache.org/
+[docker image]: https://hub.docker.com/_/maven
 [alpine-base]: https://github.com/docker-suite/alpine-base/
