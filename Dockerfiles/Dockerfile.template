@@ -1,5 +1,4 @@
-FROM maven:{{MAVEN_VERSION}}-alpine
-
+FROM {{BASE_IMAGE}}
 
 LABEL maintainer="Hexosse <hexosse@gmail.com>" \
     org.opencontainers.image.title="docker-suite dsuite/maven:{{MAVEN_VERSION}} image" \
@@ -13,40 +12,63 @@ LABEL maintainer="Hexosse <hexosse@gmail.com>" \
     org.opencontainers.image.created="{{DOCKER_IMAGE_CREATED}}" \
     org.opencontainers.image.revision="{{DOCKER_IMAGE_REVISION}}"
 
-# Github token
-ARG GH_TOKEN
+## Make sure this use an alpine base image
+RUN [ -f /etc/alpine-release ]
 
-# Maven user
+## Build args
+ARG USER_HOME_DIR="/root"
+ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/{{MAVEN_VERSION}}/binaries
+
+## Environments variables
+ENV MAVEN_VERSION {{MAVEN_VERSION}}
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+## Install Maven
+RUN \
+	# Print executed commands
+	set -x \
+    # Update repository indexes
+    && apk update \
+    # Install mandatory packages
+    && apk add --no-cache curl tar bash procps \
+    # Prepare folders
+    && mkdir -p ${MAVEN_HOME} ${MAVEN_HOME}/ref \
+    # Download and install maven
+    && curl -fsSL -o /tmp/apache-maven.tar.gz https://apache.osuosl.org/maven/maven-3/{{MAVEN_VERSION}}/binaries/apache-maven-{{MAVEN_VERSION}}-bin.tar.gz \
+    && tar -xzf /tmp/apache-maven.tar.gz -C ${MAVEN_HOME} --strip-components=1 \
+    && rm -f /tmp/apache-maven.tar.gz \
+    && ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
+
+
+## Default user
 ARG MAVEN_USER="maven"
 ARG MAVEN_UID=1000
 ARG MAVEN_GROUP="maven"
 ARG MAVEN_GID=1000
 
-ENV NEW_USER=$MAVEN_USER \
-    NEW_UID=$MAVEN_UID \
-    NEW_GROUP=$MAVEN_GROUP \
-    NEW_GID=$MAVEN_GID \
-    NEW_HOME="/root"
-
-## Create users
+## Create maven user
 RUN \
 	# Print executed commands
 	set -x \
     # Ensure maven user exists
-    && addgroup -g $NEW_GID -S $NEW_GROUP 2>/dev/null \
-    && adduser -u $NEW_UID -S -D -s /sbin/nologin -G $NEW_GROUP -g $NEW_USER $NEW_GROUP 2>/dev/null \
+    && addgroup -g $MAVEN_GID -S $MAVEN_GROUP 2>/dev/null \
+    && adduser -u $MAVEN_UID -S -D -s /sbin/nologin -G $MAVEN_GROUP -g $MAVEN_USER $MAVEN_GROUP 2>/dev/null \
     # maven user must be member of sudoers
-    && echo "${NEW_USER} ALL=(ALL) ALL" >> /etc/sudoers \
-    && echo "${NEW_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    && echo "${MAVEN_USER} ALL=(ALL) ALL" >> /etc/sudoers \
+    && echo "${MAVEN_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-##
+
+## Github token used to install alpine-base
+ARG GH_TOKEN
+
+## Make this image an alpine-base image
 RUN \
 	# Print executed commands
 	set -x \
     # Update repository indexes
     && apk update \
     # Download the install alpine-base
-    && apk add --no-cache curl \
     && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/docker-suite/Install-Scripts/master/alpine-base/install-base.sh \
     && sh /tmp/install-base.sh \
     # Install git and openssh
@@ -60,9 +82,14 @@ RUN \
 	# Clear apk's cache
 	&& apk-cleanup
 
-## Replace default entrypoint
-COPY /rootfs /
-RUN chmod +x /entrypoint.sh
+## Copy folders
+COPY rootfs /
+
+## Make entrypoint script accessible and executable
+RUN chmod 0755 /entrypoint.sh && chmod 0755 /usr/local/sbin/mvn-entrypoint.sh
 
 ## Entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+
+## Default command
+CMD ["mvn"]

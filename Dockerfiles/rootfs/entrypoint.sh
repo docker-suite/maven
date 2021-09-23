@@ -38,4 +38,4 @@ fi
 ###
 ### Execute default maven entrypoint
 ###
-source /usr/local/bin/mvn-entrypoint.sh
+source /usr/local/sbin/mvn-entrypoint.sh
