@@ -8,7 +8,7 @@ DIR:=$(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
 
 ## Define the latest version
 base_image = openjdk:16-alpine
-maven_version = 3.8.2
+maven_version = 3.8.3
 image_name = 3.8-openjdk-16
 
 ## Config
@@ -22,11 +22,11 @@ help: ## This help!
 build-all: ## Build all supported versions
 	@$(MAKE) build	base=openjdk:7-alpine version=3.5.4 name=3.5-openjdk-7
 	@$(MAKE) build	base=openjdk:7-alpine version=3.6.3 name=3.6-openjdk-7
-	@$(MAKE) build	base=openjdk:7-alpine version=3.8.2 name=3.8-openjdk-7
+	@$(MAKE) build	base=openjdk:7-alpine version=3.8.3 name=3.8-openjdk-7
 	@$(MAKE) build	base=openjdk:8-alpine version=3.5.4 name=3.5-openjdk-8
 	@$(MAKE) build	base=openjdk:8-alpine version=3.6.3 name=3.6-openjdk-8
-	@$(MAKE) build	base=openjdk:8-alpine version=3.8.2 name=3.8-openjdk-8
-	@$(MAKE) build	base=openjdk:16-alpine version=3.8.2 name=3.8-openjdk-16
+	@$(MAKE) build	base=openjdk:8-alpine version=3.8.3 name=3.8-openjdk-8
+	@$(MAKE) build	base=openjdk:16-alpine version=3.8.3 name=3.8-openjdk-16
 
 test-all: ## Test all supported versions
 	@$(MAKE) test v=3.5-openjdk-7

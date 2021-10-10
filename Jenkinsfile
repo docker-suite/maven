@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', 'docker-hub-credentials') {
-                        sh "make build base=openjdk:7-alpine version=3.8.2 name=3.8-openjdk-7"
+                        sh "make build base=openjdk:7-alpine version=3.8.3 name=3.8-openjdk-7"
                         sh "make push v=3.8-openjdk-7"
                     }
                 }
@@ -62,7 +62,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', 'docker-hub-credentials') {
-                        sh "make build base=openjdk:8-alpine version=3.8.2 name=3.8-openjdk-8"
+                        sh "make build base=openjdk:8-alpine version=3.8.3 name=3.8-openjdk-8"
                         sh "make push v=3.8-openjdk-8"
                     }
                 }
@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', 'docker-hub-credentials') {
-                        sh "make build base=openjdk:16-alpine version=3.8.2 name=3.8-openjdk-16"
+                        sh "make build base=openjdk:16-alpine version=3.8.3 name=3.8-openjdk-16"
                         sh "make push v=3.8-openjdk-16"
                     }
                 }
