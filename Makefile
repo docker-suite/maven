@@ -20,13 +20,13 @@ help: ## This help!
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m %s\n", $$1, $$2}'
 
 build-all: ## Build all supported versions
-	@$(MAKE) build	base=openjdk:7-alpine				version=3.5.4	name=3.5-openjdk-7
-	@$(MAKE) build	base=openjdk:7-alpine				version=3.6.3	name=3.6-openjdk-7
-	@$(MAKE) build	base=openjdk:7-alpine				version=3.8.2	name=3.8-openjdk-7
-	@$(MAKE) build	base=openjdk:8-alpine				version=3.5.4	name=3.5-openjdk-8
-	@$(MAKE) build	base=openjdk:8-alpine				version=3.6.3	name=3.6-openjdk-8
-	@$(MAKE) build	base=openjdk:8-alpine				version=3.8.2	name=3.8-openjdk-8
-	@$(MAKE) build	base=openjdk:16-alpine				version=3.8.2	name=3.8-openjdk-16
+	@$(MAKE) build	base=openjdk:7-alpine version=3.5.4 name=3.5-openjdk-7
+	@$(MAKE) build	base=openjdk:7-alpine version=3.6.3 name=3.6-openjdk-7
+	@$(MAKE) build	base=openjdk:7-alpine version=3.8.2 name=3.8-openjdk-7
+	@$(MAKE) build	base=openjdk:8-alpine version=3.5.4 name=3.5-openjdk-8
+	@$(MAKE) build	base=openjdk:8-alpine version=3.6.3 name=3.6-openjdk-8
+	@$(MAKE) build	base=openjdk:8-alpine version=3.8.2 name=3.8-openjdk-8
+	@$(MAKE) build	base=openjdk:16-alpine version=3.8.2 name=3.8-openjdk-16
 
 test-all: ## Test all supported versions
 	@$(MAKE) test v=3.5-openjdk-7
